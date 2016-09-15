@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ProcessesApplication.class)
 @WebAppConfiguration
-
+@DataJdbcTest
 /**
  * Created by internship on 15.09.2016.
  */
@@ -45,22 +45,7 @@ public class AppControllerTest extends BaseControllerTest {
     }
 
     @Test
-    public void getApps() throws Exception {
-
+    public void getInexistentApp() throws Exception {
+        mockMvc.perform(get("/app/1")).andDo(print()).andExpect(status().isNotFound());
     }
-
-    @Test
-    public void getApp() throws Exception {
-
-    }
-
-    @Test
-    public void addApp() throws Exception {
-
-        mockMvc.perform(get("/greetings/1")).andDo(print()).andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.id", is(0)))
-                .andExpect(jsonPath("$.content", is("No greeting")));
-
-    }
-
 }
