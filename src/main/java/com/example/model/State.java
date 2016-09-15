@@ -1,12 +1,13 @@
 package com.example.model;
 
-import lombok.AllArgsConstructor;
+import com.sun.istack.internal.Nullable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
 import java.sql.Timestamp;
 
 /**
@@ -17,10 +18,16 @@ import java.sql.Timestamp;
 @Getter
 @Table(name = "state")
 @NoArgsConstructor
-@AllArgsConstructor
 public class State extends Base {
-    private int start;
-    private int stop;
+    private long start;
+    private long stop;
     private Boolean active;
-    private int activeTime;
+    private long time;
+
+    public State(long start, long stop, Boolean active, long time) {
+        this.start = start;
+        this.stop = stop;
+        this.active = active;
+        this.time = time;
+    }
 }

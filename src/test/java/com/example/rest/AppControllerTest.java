@@ -10,32 +10,14 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
 import javax.ws.rs.core.MediaType;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import java.util.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.*;
@@ -50,20 +32,30 @@ import static org.hamcrest.Matchers.*;
  * Created by internship on 15.09.2016.
  */
 public class AppControllerTest extends BaseControllerTest {
-    private int calendar = 2;
-
-    private int addHours(int hours) {
-        return calendar = calendar + 2;
-    }
+    private Calendar calendar = Calendar.getInstance();
+    private Date currentDate = calendar.getTime();
+    private List<App> apps;
 
     @Before
     public void setUp() throws Exception {
+        App app1 = new App(123, "Skype", "Skype 123");
+        App app2 = new App(1234, "Chrome", "Chrome 1234");
 
+        app1.getStates().add(startState());
+        app1.getStates().add(idleState());
+        app1.getStates().add(activeState());
+        app1.getStates().add(stopState());
+
+        app2.getStates().add(startState());
+
+        apps = new ArrayList<>();
+
+        apps.add(app1);
+        apps.add(app2);
     }
 
     @After
     public void tearDown() throws Exception {
-
     }
 
     @Autowired
@@ -72,22 +64,38 @@ public class AppControllerTest extends BaseControllerTest {
     @Autowired
     private AppRepo repo;
 
+    private void addRandomMinutes() {
+        calendar.add(Calendar.MINUTE, generateRandomNumber());
+    }
+
+    private int generateRandomNumber() {
+        Random rand = new Random();
+        int value = rand.nextInt(20) + 1;
+        return value;
+    }
+
+    private State startState() {
+        addRandomMinutes();
+        return new State(currentDate.getTime(), 0, true, currentDate.getTime());
+    }
+
+    private State idleState() {
+        addRandomMinutes();
+        return new State(0, 0, false, currentDate.getTime());
+    }
+
+    private State activeState() {
+        addRandomMinutes();
+        return new State(0, 0, true, currentDate.getTime());
+    }
+
+    private State stopState() {
+        addRandomMinutes();
+        return new State(0, currentDate.getTime(), false, currentDate.getTime());
+    }
+
     @Test
     public void update() throws Exception {
-        App app1 = new App(123, "Skype", "Skype 123");
-        App app2 = new App(1234, "Chrome", "Chrome 1234");
-
-        System.out.println(LocalDate.now().toEpochDay());
-
-        List<App> apps = new ArrayList<>();
-
-        app1.getStates().add(new State(calendar, 0, true, calendar));
-        app1.getStates().add(new State(0, 0, true, addHours(2)));
-        app2.getStates().add(new State(0, addHours(1), true, calendar));
-
-        apps.add(app1);
-        apps.add(app2);
-
         System.out.println(gson.toJson(apps));
 
         mockMvc.perform(post("/update")
@@ -96,6 +104,17 @@ public class AppControllerTest extends BaseControllerTest {
                 )
                 .andDo(print())
                 .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getApps() throws Exception {
+        mockMvc.perform(get("/apps")
+                    .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].states", hasSize(4)))
                 .andExpect(status().isOk());
     }
 }

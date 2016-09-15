@@ -22,7 +22,8 @@ public class AppControllerImpl implements AppController {
 
     @Override
     public ResponseEntity getApps() {
-        return null;
+        List<App> apps = (List<App>) repo.findAll();
+        return ResponseEntity.ok().body(apps);
     }
 
     @Override

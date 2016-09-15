@@ -1,6 +1,5 @@
 package com.example.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,17 +15,17 @@ import java.util.List;
  * Created by internship on 15.09.2016.
  */
 @Entity
-@Setter
-@Getter
 @Table(name = "App")
 @NoArgsConstructor
-@AllArgsConstructor
+@Setter
+@Getter
 public class App extends Base {
     private long processId;
     private String title;
     private String processName;
+
     @OneToMany(cascade = CascadeType.ALL)
-    List<State> states = new ArrayList<>();
+    private List<State> states = new ArrayList<>();
 
     public App(long processId, String title, String processName) {
         this.processId = processId;

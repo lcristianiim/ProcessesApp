@@ -13,7 +13,7 @@ import javax.persistence.MappedSuperclass;
 @Getter
 @Setter
 @MappedSuperclass
-public class Base {
+public class    Base {
     @Id
     @GeneratedValue
     protected long id;
