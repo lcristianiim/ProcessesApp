@@ -1,11 +1,13 @@
 package com.example.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 /**
  * Created by internship on 15.09.2016.
@@ -14,9 +16,11 @@ import java.security.Timestamp;
 @Setter
 @Getter
 @Table(name = "state")
+@NoArgsConstructor
+@AllArgsConstructor
 public class State extends Base {
-    private Timestamp start;
-    private Timestamp stop;
+    private int start;
+    private int stop;
     private Boolean active;
-    private Boolean activeTime;
+    private int activeTime;
 }
