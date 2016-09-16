@@ -1,5 +1,6 @@
 package com.example.rest;
 
+import com.google.gson.Gson;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,4 +27,7 @@ public class BaseControllerTest {
                 .webAppContextSetup(context)
                 .build();
     }
+
+    @Autowired
+    protected Gson gson;
 }

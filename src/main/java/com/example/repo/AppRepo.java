@@ -12,9 +12,6 @@ import java.util.List;
  */
 public interface AppRepo extends CrudRepository<App, Long> {
     @Query("select a from App a where a.processName = :processName")
-    public List<App> checkIfAppExists(@Param("processName") String processName);
-
-    @Query("select a from App a where a.processName = :processName")
-    public List<App> findByProcessName(@Param("processName") String processName);
+    List<App> findByProcessName(@Param("processName") String processName);
 
 }

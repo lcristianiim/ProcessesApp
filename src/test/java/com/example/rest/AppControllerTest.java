@@ -1,10 +1,12 @@
 package com.example.rest;
 
 import com.example.ProcessesApplication;
+import com.example.helper.DateOps;
+import com.example.helper.StateOps;
+import com.example.helpers.StateHelper;
 import com.example.model.App;
 import com.example.model.State;
 import com.example.service.AppService;
-import com.google.gson.Gson;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
@@ -33,24 +35,25 @@ import static org.hamcrest.Matchers.*;
  * Created by internship on 15.09.2016.
  */
 public class AppControllerTest extends BaseControllerTest {
-    private Calendar calendar = Calendar.getInstance();
-    private Date currentDate = calendar.getTime();
+
     private List<App> apps;
 
+    private DateOps dateOps = new DateOps();
+
     @Before
+    // Create two apps with coresponding states
     public void setUp() throws Exception {
         App app1 = new App(123, "Skype", "Skype 123");
         App app2 = new App(1234, "Chrome", "Chrome 1234");
 
-        app1.getStates().add(startState(app1.getTitle()));
-        app1.getStates().add(idleState(app1.getTitle()));
-        app1.getStates().add(focusState(app1.getTitle()));
-        app1.getStates().add(stopState(app1.getTitle()));
+        app1.getStates().add(StateOps.startState(app1.getTitle(), dateOps));
+        app1.getStates().add(StateOps.idleState(app1.getTitle(), dateOps));
+        app1.getStates().add(StateOps.focusState(app1.getTitle(), dateOps));
+        app1.getStates().add(StateOps.stopState(app1.getTitle(), dateOps));
 
-        app2.getStates().add(startState(app2.getTitle()));
+        app2.getStates().add(StateOps.startState(app2.getTitle(), dateOps));
 
         apps = new ArrayList<>();
-
         apps.add(app1);
         apps.add(app2);
     }
@@ -60,40 +63,7 @@ public class AppControllerTest extends BaseControllerTest {
         appService.deleteAll();
     }
 
-    @Autowired
-    Gson gson;
-
     @Autowired AppService appService;
-
-    private void addRandomMinutes() {
-        calendar.add(Calendar.MINUTE, generateRandomNumber());
-    }
-
-    private int generateRandomNumber() {
-        Random rand = new Random();
-        int value = rand.nextInt(20) + 1;
-        return value;
-    }
-
-    private State startState(String appName) {
-        addRandomMinutes();
-        return new State(1, currentDate.getTime(), appName);
-    }
-
-    private State idleState(String appName) {
-        addRandomMinutes();
-        return new State(0, currentDate.getTime(), appName);
-    }
-
-    private State focusState(String appName) {
-        addRandomMinutes();
-        return new State(2, currentDate.getTime(), appName);
-    }
-
-    private State stopState(String appName) {
-        addRandomMinutes();
-        return new State(-1, currentDate.getTime(), appName);
-    }
 
     @Test
     public void update() throws Exception {
@@ -138,8 +108,8 @@ public class AppControllerTest extends BaseControllerTest {
         App app1 = apps.get(0);
         App app2 = apps.get(1);
 
-        State app1State = appService.getLastStateForApp(app1);
-        State app2State = appService.getLastStateForApp(app2);
+        State app1State = StateHelper.getLastStateForApp(app1);
+        State app2State = StateHelper.getLastStateForApp(app2);
 
         app1.setStates(new ArrayList<State>());
         app1.getStates().add(app1State);
@@ -166,7 +136,7 @@ public class AppControllerTest extends BaseControllerTest {
 
         App app1 = apps.get(0);
         app1.setStates(new ArrayList<State>());
-        app1.getStates().add(startState(app1.getTitle()));
+        app1.getStates().add(StateOps.startState(app1.getTitle(), dateOps));
         List<App> appsToUpdate = new ArrayList<>();
         appsToUpdate.add(app1);
 

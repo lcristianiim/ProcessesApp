@@ -1,11 +1,12 @@
 package com.example.service;
 
+import com.example.helpers.StateHelper;
 import com.example.model.App;
-import com.example.model.State;
 import com.example.repo.AppRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,30 +19,27 @@ public class AppService {
 
     public App save(App app) {
 
-        List<App> appExists = repo.checkIfAppExists(app.getProcessName());
+        List<App> appExists = repo.findByProcessName(app.getProcessName());
 
         if (appExists.size() > 0) {
-
-            if (! statesAreEqual(getLastStateForApp(appExists.get(0)), app.getStates().get(0))) {
+            if (! StateHelper.statesAreEqual(StateHelper.getLastStateForApp(appExists.get(0)), app.getStates().get(0))) {
                 appExists.get(0).getStates().add(app.getStates().get(0));
             }
-
             app = appExists.get(0);
         }
 
         return repo.save(app);
     }
 
-    public boolean statesAreEqual(State state1, State state2) {
-        return state1.equals(state2);
-    }
+    public List<App> save(List<App> apps) {
+        List<App> addedApps = new ArrayList<>();
 
-    public State getLastStateForApp(App app) {
-        if (app.getStates().size() > 0) {
-            return app.getStates().get(app.getStates().size() - 1);
+        for (int i = 0; i < apps.size(); i++) {
+            App addedApp = save(apps.get(i));
+            addedApps.add(i, addedApp);
         }
 
-        return null;
+        return addedApps;
     }
 
     public Iterable<App> findAll() {
