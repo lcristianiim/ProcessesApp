@@ -22,7 +22,7 @@ public class App extends Base {
     private String title;
     private String processName;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<State> states = new ArrayList<>();
 
     public App(long processId, String title, String processName) {

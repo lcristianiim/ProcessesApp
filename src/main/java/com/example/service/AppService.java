@@ -55,4 +55,8 @@ public class AppService {
     public void deleteAll() {
         repo.deleteAll();
     }
+
+    public App findByProcessName(String processName) {
+        return repo.findByProcessName(processName).get(0);
+    }
 }

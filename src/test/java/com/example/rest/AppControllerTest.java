@@ -159,4 +159,27 @@ public class AppControllerTest extends BaseControllerTest {
             .andExpect(jsonPath("$.[0].states", hasSize(4)))
             .andExpect(status().isOk());
     }
+
+    @Test
+    public void addNewState() throws Exception {
+        for (App app : apps) {
+            appService.save(app);
+        }
+
+        App app1 = apps.get(0);
+        app1.setStates(new ArrayList<State>());
+        app1.getStates().add(startState());
+        List<App> appsToUpdate = new ArrayList<>();
+        appsToUpdate.add(app1);
+
+        mockMvc.perform(post("/update")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(appsToUpdate))
+            )
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        App firstApp = appService.findByProcessName("Skype 123");
+        Assert.assertEquals(firstApp.getStates().size(), 5);
+    }
 }

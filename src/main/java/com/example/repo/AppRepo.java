@@ -15,4 +15,7 @@ public interface AppRepo extends CrudRepository<App, Long> {
     public List<App> checkIfAppExists(@Param("title") String title,
                                       @Param("processName") String processName);
 
+    @Query("select a from App a where a.processName = :processName")
+    public List<App> findByProcessName(@Param("processName") String processName);
+
 }

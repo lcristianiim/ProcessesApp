@@ -1,15 +1,12 @@
 package com.example.model;
 
-import com.sun.istack.internal.Nullable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import java.sql.Timestamp;
 
 /**
  * Created by internship on 15.09.2016.
@@ -24,6 +21,7 @@ public class State extends Base {
     private long stop;
     private Boolean active;
     private long time;
+    private String processName;
 
     public State(long start, long stop, Boolean active, long time) {
         this.start = start;
