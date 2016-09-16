@@ -3,11 +3,9 @@ package com.example.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.repository.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,5 +29,29 @@ public class App extends Base {
         this.processId = processId;
         this.title = title;
         this.processName = processName;
+    }
+
+    public App(String title, String processName) {
+        this.title = title;
+        this.processName = processName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof App)) return false;
+
+        App app = (App) o;
+
+        if (!getTitle().equals(app.getTitle())) return false;
+        return getProcessName().equals(app.getProcessName());
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getTitle().hashCode();
+        result = 31 * result + getProcessName().hashCode();
+        return result;
     }
 }

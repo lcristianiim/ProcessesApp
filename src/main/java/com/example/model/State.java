@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import java.sql.Timestamp;
@@ -29,5 +30,26 @@ public class State extends Base {
         this.stop = stop;
         this.active = active;
         this.time = time;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof State)) return false;
+
+        State state = (State) o;
+
+        if (getStart() != state.getStart()) return false;
+        if (getStop() != state.getStop()) return false;
+        return getActive().equals(state.getActive());
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (getStart() ^ (getStart() >>> 32));
+        result = 31 * result + (int) (getStop() ^ (getStop() >>> 32));
+        result = 31 * result + getActive().hashCode();
+        return result;
     }
 }

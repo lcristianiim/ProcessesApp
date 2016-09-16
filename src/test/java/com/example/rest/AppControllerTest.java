@@ -4,8 +4,11 @@ import com.example.ProcessesApplication;
 import com.example.model.App;
 import com.example.model.State;
 import com.example.repo.AppRepo;
+import com.example.service.AppService;
 import com.google.gson.Gson;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -56,13 +59,13 @@ public class AppControllerTest extends BaseControllerTest {
 
     @After
     public void tearDown() throws Exception {
+        appService.deleteAll();
     }
 
     @Autowired
     Gson gson;
 
-    @Autowired
-    private AppRepo repo;
+    @Autowired AppService appService;
 
     private void addRandomMinutes() {
         calendar.add(Calendar.MINUTE, generateRandomNumber());
@@ -105,10 +108,18 @@ public class AppControllerTest extends BaseControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(status().isOk());
+
+        App firstApp = appService.findOne(1L);
+        Assert.assertTrue(firstApp.equals(apps.get(0)));
     }
 
     @Test
     public void getApps() throws Exception {
+
+        for (App app : apps) {
+            appService.save(app);
+        }
+
         mockMvc.perform(get("/apps")
                     .accept(MediaType.APPLICATION_JSON)
                 )
@@ -116,5 +127,36 @@ public class AppControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].states", hasSize(4)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void updateAppWithStateEqualsToLastState() throws Exception {
+        for (App app : apps) {
+            appService.save(app);
+        }
+
+        List<App> appsToUpdate = new ArrayList<>();
+
+        App app1 = apps.get(0);
+        App app2 = apps.get(1);
+
+        State app1State = appService.getLastStateForApp(app1);
+        State app2State = appService.getLastStateForApp(app2);
+
+        app1.setStates(new ArrayList<State>());
+        app1.getStates().add(app1State);
+        app2.setStates(new ArrayList<State>());
+        app2.getStates().add(app2State);
+
+        appsToUpdate.add(app1);
+        appsToUpdate.add(app2);
+
+        mockMvc.perform(post("/update")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(appsToUpdate))
+            )
+            .andDo(print())
+            .andExpect(jsonPath("$.[0].states", hasSize(4)))
+            .andExpect(status().isOk());
     }
 }
