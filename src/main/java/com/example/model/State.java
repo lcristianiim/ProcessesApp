@@ -17,17 +17,16 @@ import javax.persistence.Table;
 @Table(name = "state")
 @NoArgsConstructor
 public class State extends Base {
-    private long start;
-    private long stop;
-    private Boolean active;
+    /* -1 Stopped; 0 Idle; 1 Started; 2 Focus */
+    private int status;
     private long time;
-    private String processName;
+    private String appName;
 
-    public State(long start, long stop, Boolean active, long time) {
-        this.start = start;
-        this.stop = stop;
-        this.active = active;
+    public State(int status, long time, String appName) {
+        this.status = status;
         this.time = time;
+        this.appName = appName;
+
     }
 
     @Override
@@ -37,17 +36,15 @@ public class State extends Base {
 
         State state = (State) o;
 
-        if (getStart() != state.getStart()) return false;
-        if (getStop() != state.getStop()) return false;
-        return getActive().equals(state.getActive());
+        if (getStatus() != state.getStatus()) return false;
+        return getAppName().equals(state.getAppName());
 
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (getStart() ^ (getStart() >>> 32));
-        result = 31 * result + (int) (getStop() ^ (getStop() >>> 32));
-        result = 31 * result + getActive().hashCode();
+        int result = getStatus();
+        result = 31 * result + getAppName().hashCode();
         return result;
     }
 }

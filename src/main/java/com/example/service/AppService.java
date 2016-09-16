@@ -18,7 +18,7 @@ public class AppService {
 
     public App save(App app) {
 
-        List<App> appExists = repo.checkIfAppExists(app.getTitle(), app.getProcessName());
+        List<App> appExists = repo.checkIfAppExists(app.getProcessName());
 
         if (appExists.size() > 0) {
 

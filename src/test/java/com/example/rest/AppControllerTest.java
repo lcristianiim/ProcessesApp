@@ -3,10 +3,8 @@ package com.example.rest;
 import com.example.ProcessesApplication;
 import com.example.model.App;
 import com.example.model.State;
-import com.example.repo.AppRepo;
 import com.example.service.AppService;
 import com.google.gson.Gson;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
@@ -44,12 +42,12 @@ public class AppControllerTest extends BaseControllerTest {
         App app1 = new App(123, "Skype", "Skype 123");
         App app2 = new App(1234, "Chrome", "Chrome 1234");
 
-        app1.getStates().add(startState());
-        app1.getStates().add(idleState());
-        app1.getStates().add(activeState());
-        app1.getStates().add(stopState());
+        app1.getStates().add(startState(app1.getTitle()));
+        app1.getStates().add(idleState(app1.getTitle()));
+        app1.getStates().add(focusState(app1.getTitle()));
+        app1.getStates().add(stopState(app1.getTitle()));
 
-        app2.getStates().add(startState());
+        app2.getStates().add(startState(app2.getTitle()));
 
         apps = new ArrayList<>();
 
@@ -77,24 +75,24 @@ public class AppControllerTest extends BaseControllerTest {
         return value;
     }
 
-    private State startState() {
+    private State startState(String appName) {
         addRandomMinutes();
-        return new State(currentDate.getTime(), 0, true, currentDate.getTime());
+        return new State(1, currentDate.getTime(), appName);
     }
 
-    private State idleState() {
+    private State idleState(String appName) {
         addRandomMinutes();
-        return new State(0, 0, false, currentDate.getTime());
+        return new State(0, currentDate.getTime(), appName);
     }
 
-    private State activeState() {
+    private State focusState(String appName) {
         addRandomMinutes();
-        return new State(0, 0, true, currentDate.getTime());
+        return new State(2, currentDate.getTime(), appName);
     }
 
-    private State stopState() {
+    private State stopState(String appName) {
         addRandomMinutes();
-        return new State(0, currentDate.getTime(), false, currentDate.getTime());
+        return new State(-1, currentDate.getTime(), appName);
     }
 
     @Test
@@ -168,7 +166,7 @@ public class AppControllerTest extends BaseControllerTest {
 
         App app1 = apps.get(0);
         app1.setStates(new ArrayList<State>());
-        app1.getStates().add(startState());
+        app1.getStates().add(startState(app1.getTitle()));
         List<App> appsToUpdate = new ArrayList<>();
         appsToUpdate.add(app1);
 

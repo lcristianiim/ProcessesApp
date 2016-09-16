@@ -43,15 +43,12 @@ public class App extends Base {
 
         App app = (App) o;
 
-        if (!getTitle().equals(app.getTitle())) return false;
         return getProcessName().equals(app.getProcessName());
 
     }
 
     @Override
     public int hashCode() {
-        int result = getTitle().hashCode();
-        result = 31 * result + getProcessName().hashCode();
-        return result;
+        return getProcessName().hashCode();
     }
 }
